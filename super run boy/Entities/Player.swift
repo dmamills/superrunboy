@@ -35,6 +35,19 @@ class Player : SKSpriteNode {
         dieFrames = AnimationHelper.loadTextures(from: SKTextureAtlas(named: GameConstants.Strings.playerDieAtlas), with: GameConstants.Strings.diePrefix)
     }
     
+    func loadActions(_ windowHeight : CGFloat) {
+        let up = SKAction.moveBy(x: 0.0, y: windowHeight / 4, duration: 0.4)
+        up.timingMode = .easeOut
+        
+        createUserData(entry: up, forKey: GameConstants.Strings.jumpUpActionKey)
+        
+        let move = SKAction.moveBy(x: 0.0, y: size.height, duration: 0.4)
+        let jump = SKAction.animate(with: jumpFrames, timePerFrame: 0.4 / Double(jumpFrames.count))
+        
+        let group = SKAction.group([move, jump])
+        createUserData(entry: group, forKey: GameConstants.Strings.brakeDescendActionKey)
+    }
+    
     func animate(for state: PlayerState) {
         removeAllActions()
         
@@ -44,13 +57,13 @@ class Player : SKSpriteNode {
         case .running:
             startAnimation(runFrames)
         case .jumping:
-            startAnimation(jumpFrames)
+            startAnimation(jumpFrames, false, false)
         }
     }
     
-    private func startAnimation(_ frames : [SKTexture]) {
+    private func startAnimation(_ frames : [SKTexture], _ resize: Bool = true, _ restore: Bool = true) {
         if frames.count > 0 {
-            self.run(SKAction.repeatForever(SKAction.animate(with: frames, timePerFrame: 0.05, resize: true, restore: true)))
+            self.run(SKAction.repeatForever(SKAction.animate(with: frames, timePerFrame: 0.05, resize: resize, restore: restore)))
         } else {
             print("no frames to run.")
         }

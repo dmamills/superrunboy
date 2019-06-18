@@ -20,9 +20,15 @@ class GameScene : SKScene {
     var backgroundLayer : RepeatingLayer!
     var mapNode : SKNode!
     var tileMap : SKTileMapNode!
+    
     var player : Player!
     var touch = false
     var brake = false
+    
+    var coins = 0
+    var superCoins = 0
+    
+    var hudDelegate : HUDDelegate?
     
     var lastTime : TimeInterval = 0
     var dt : TimeInterval = 0
@@ -31,30 +37,38 @@ class GameScene : SKScene {
             switch newValue {
             case .ongoing:
                 player.state = .running
-            case .ready:
+                pauseEnemies(false)
+            case .ready, .finished, .paused:
                 player.state = .idle
-            case .finished:
-                player.state = .idle
-            default:
-                print("default?")
+                pauseEnemies(true)
             }
         }
     }
     
     override func didMove(to view: SKView) {
+        
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector(dx: CGFloat(0.0), dy: CGFloat(-6.0))
+        
+        physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x: frame.minX, y: frame.minY), to: CGPoint(x: frame.maxX, y: frame.minY))
+        physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.frame
         createLayers()
         load(LEVEL)
         loadTileMap()
         createPlayer()
+        addHud()
+        
+        // BUG fix to enable SKS timeline actions
+        isPaused = true
+        isPaused = false
     }
+   
     
     func createLayers() {
         worldLayer = Layer()
         addChild(worldLayer)
         worldLayer.zPosition = GameConstants.ZPositions.world
         worldLayer.layerVelocity = CGPoint(x: -200.0, y: 0.0)
-        physicsWorld.contactDelegate = self
-        physicsWorld.gravity = CGVector(dx: CGFloat(0.0), dy: CGFloat(-6.0))
         
         backgroundLayer = RepeatingLayer()
         addChild(backgroundLayer)
@@ -86,7 +100,6 @@ class GameScene : SKScene {
         tileMap.scale(to: frame.size, width: false, multiplier: 1.0)
         PhysicsHelper.addBody(to: tileMap, with: GameConstants.Strings.groundNodeName)
         
-        
         for child in groundTiles.children {
             if let sprite = child as? SKSpriteNode, sprite.name != nil {
                 //print(sprite.name)
@@ -97,9 +110,7 @@ class GameScene : SKScene {
     
     func createPlayer() {
         player = Player(imageNamed: GameConstants.Strings.playerImage)
-        
         guard let player = player else { return }
-        
         
         player.position = CGPoint(x: frame.midX / 2.0, y: frame.midY)
         player.scale(to: frame.size, width: false, multiplier: 0.1)
@@ -112,20 +123,15 @@ class GameScene : SKScene {
         player.loadTextures()
         
         addChild(player)
-        addPlayerActions()
+        player.loadActions(frame.size.height)
     }
     
-    func addPlayerActions() {
-        let up = SKAction.moveBy(x: 0.0, y: frame.size.height / 4, duration: 0.4)
-        up.timingMode = .easeOut
-        
-        player.createUserData(entry: up, forKey: GameConstants.Strings.jumpUpActionKey)
-        
-        let move = SKAction.moveBy(x: 0.0, y: player.size.height, duration: 0.4)
-        let jump = SKAction.animate(with: player.jumpFrames, timePerFrame: 0.4 / Double(player.jumpFrames.count))
-        
-        let group = SKAction.group([move, jump])
-        player.createUserData(entry: group, forKey: GameConstants.Strings.brakeDescendActionKey)
+    func addHud() {
+        let hud = GameHUD(with: CGSize(width: frame.width, height: frame.height * 0.1))
+        hud.position = CGPoint(x: frame.midX, y: frame.maxY - frame.height * 0.05)
+        hud.zPosition = GameConstants.ZPositions.hud
+        hudDelegate = hud
+        addChild(hud)
     }
     
     func jump() {
@@ -145,12 +151,82 @@ class GameScene : SKScene {
     func brakeDescend() {
         brake = true
         player.physicsBody!.velocity.dy = 0.0
-        player.run(player.userData?.value(forKey: GameConstants.Strings.brakeDescendActionKey) as! SKAction)
+        
+        if let brakeEmitter = ParticleHelper.addParticleEffect(name: GameConstants.Strings.jumpBrakeEmitter, particlePositionRange: CGVector(dx: 30.0, dy: 30.0), position: CGPoint(x: player.position.x, y: player.position.y - player.size.height/2)) {
+            brakeEmitter.zPosition = GameConstants.ZPositions.object
+            addChild(brakeEmitter)
+            player.run(player.userData?.value(forKey: GameConstants.Strings.brakeDescendActionKey) as! SKAction, completion: {
+                ParticleHelper.removeParticleEffect(name: GameConstants.Strings.jumpBrakeEmitter, from: self)
+            })
+        }
+        
     }
     
+    func pauseEnemies(_ pause : Bool) {
+        for enemy in tileMap[GameConstants.Strings.enemyNodeName] {
+            enemy.isPaused = pause
+        }
+    }
+    
+    func handleCollectable(sprite: SKSpriteNode) {
+        switch sprite.name! {
+        case GameConstants.Strings.coinName,
+             _ where GameConstants.Strings.superCoinNames.contains(sprite.name!):
+            collectCoin(sprite: sprite)
+        default:
+            break
+        }
+    }
+    
+    func collectCoin(sprite: SKSpriteNode) {
+        if(sprite.name! == GameConstants.Strings.coinName) {
+            coins += 1
+            hudDelegate!.updateCoinLabel(coins: coins)
+        } else {
+            superCoins += 1
+            for index in 0..<3 {
+                if GameConstants.Strings.superCoinNames[index] == sprite.name! {
+            hudDelegate?.addSuperCoin(index: index)
+                }
+            }
+            
+        }
+        
+        if let coinDust = ParticleHelper.addParticleEffect(name: GameConstants.Strings.coinDustEmitter, particlePositionRange: CGVector(dx: 5.0, dy: 5.0), position: CGPoint.zero) {
+            coinDust.zPosition = GameConstants.ZPositions.object
+            sprite.addChild(coinDust)
+            sprite.run(SKAction.fadeOut(withDuration: 0.4), completion: {
+                coinDust.removeFromParent()
+                sprite.removeFromParent()
+            })
+        }
+    }
+
+    // 0 == hit enemy, 1 == fell off
+    func die(_ reason : Int) {
+        gameState = .finished
+        player.turnGravity(on: false)
+        player.physicsBody = nil
+        var deathAnimation : SKAction!
+        switch reason {
+        case 0:
+            deathAnimation = SKAction.animate(with: player.dieFrames, timePerFrame: 0.1, resize: true, restore: true)
+        case 1:
+            let up = SKAction.moveTo(y: frame.midY, duration: 0.4)
+            let wait = SKAction.wait(forDuration: 0.2)
+            let down = SKAction.moveTo(y: -player.size.height, duration: 0.4)
+            deathAnimation = SKAction.sequence([up, wait, down])
+        default:
+            deathAnimation = SKAction.animate(with: player.dieFrames, timePerFrame: 0.1, resize: true, restore: true)
+        }
+        player.run(deathAnimation) {
+            self.player.removeFromParent()
+        }
+    }
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         switch gameState {
-        case .ready:
+        case .ready, .paused:
             gameState = .ongoing
         case .ongoing:
             touch = true
@@ -159,8 +235,9 @@ class GameScene : SKScene {
             } else if !brake {
                 brakeDescend()
             }
-        default:
-            break
+        case .finished:
+            print("game done, reset!")
+            resetGame()
         }
     }
     
@@ -195,22 +272,27 @@ class GameScene : SKScene {
         if gameState == .ongoing {
             worldLayer.update(dt)
             backgroundLayer.update(dt)
-    
-            if player.isDead() {
-                resetGame()
-            }
         }
     }
     
     private func resetGame() {
         player.isJumping = false
+        touch = false
         brake = false
-        worldLayer.reset()
+        PhysicsHelper.addBody(to: player, with: GameConstants.Strings.playerName)
         player.position = CGPoint(x: frame.midX / 2.0, y: frame.midY)
+        
+        if childNode(withName: GameConstants.Strings.playerName) == nil {
+            addChild(player)
+        }
+        if physicsBody == nil {
+            physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x: frame.minX, y: frame.minY), to: CGPoint(x: frame.maxX, y: frame.minY))
+            physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.frame
+        }
+        worldLayer.reset()
         gameState = .ready
     }
 }
-
 
 extension GameScene : SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
@@ -221,16 +303,23 @@ extension GameScene : SKPhysicsContactDelegate {
         switch contactMask {
         //if it matches player + ground, the player is no longer airborne/jumping
         case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.ground:
+            print("player hit ground")
             player.isJumping = false
             brake = false
-            player.state = gameState ==  .ready ? .idle : .running
-            
+            player.state = gameState == .ongoing ? .running : .idle
+             
          //player has hit finish line
          case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.finish:
-            print("Hit finish line")
-            //gameState = .finished
+            gameState = .finished
             resetGame()
-            
+        case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.enemy:
+            die(0)
+        case  GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.frame:
+            physicsBody = nil
+            die(1)
+        case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.collectible:
+            let collectible = contact.bodyA.node?.name == player.name ? contact.bodyB.node : contact.bodyA.node as! SKSpriteNode
+            handleCollectable(sprite: collectible as! SKSpriteNode)
         default:
             break;
             

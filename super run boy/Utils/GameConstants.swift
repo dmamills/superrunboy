@@ -26,22 +26,54 @@ class GameConstants {
         static let playerName = "player"
         static let playerImage = "Idle_0"
         static let groundNodeName = "ground"
+        static let enemyNodeName = "Enemy"
+        static let superCoinImageName = "SuperCoin"
+        static let superCoinNames = [ "Super1", "Super2", "Super3" ]
         
+        static let playButton = "PlayButton"
+        static let retryButton = "RetryButton"
+        static let menuButton = "MenuButton"
+        static let pauseButton = "PauseButton"
+        static let emptyButton = "EmptyButton"
+        static let cancelButton = "CancelButton"
+        static let largePopup = "PopupLarge"
+        static let smallPopup = "PopupSmall"
+        static let fullStar = "StarFull"
+        static let emptyStar = "StarEmpty"
+        static let bannerName = "Banner"
+        
+        static let popupButtonNames = ["MenuButton", "PlayButton", "RetryButton", "CancelButton"]
+        
+        static let scoreScoreKey = "score"
+        static let scoreCoinsKey = "coins"
+        static let scoreStarsKey = "stars"
+        
+        static let somechange = "lol"
         
         static let playerIdleAtlas = "Player Idle Atlas"
         static let playerRunAtlas = "Player Run Atlas"
         static let playerJumpAtlas = "Player Jump Atlas"
         static let playerDieAtlas = "Player Die Atlas"
+        static let coinRotateAltas = "Coin Rotate Atlas"
+        
+        static let coinName = "Coin"
+        static let coinImageName = "gold0"
         
         static let idlePrefix = "Idle_"
         static let jumpPrefix = "Jump_"
         static let runPrefix = "Run_"
         static let diePrefix = "Die_"
+        static let coinPrefix = "gold"
         
         static let jumpUpActionKey = "JumpUp"
         static let brakeDescendActionKey = "BrakeDescend"
         
         static let finishLine = "FinishLine"
+        
+        static let coinDustEmitter = "CoinDustEmitter"
+        static let jumpBrakeEmitter = "JumpBrakeEmitter"
+        
+        static let font = "Unanimous-Inverted-BRK"
     }
     
     //Bitmasks for physics categories
