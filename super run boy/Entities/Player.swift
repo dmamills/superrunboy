@@ -9,12 +9,14 @@
 import SpriteKit
 
 enum PlayerState {
-    case idle, running, jumping
+    case idle, running //, jumping
 }
 
 class Player : SKSpriteNode {
   
-    public var isJumping : Bool = false
+    var isJumping : Bool = false
+    var isInvicible : Bool = false
+    
     var runFrames = [SKTexture]()
     var idleFrames = [SKTexture]()
     var jumpFrames = [SKTexture]()
@@ -47,23 +49,39 @@ class Player : SKSpriteNode {
     }
     
     func animate(for state: PlayerState) {
-        removeAllActions()
+        removeAction(forKey: "movement")
         
         switch state {
         case .idle:
             startAnimation(idleFrames)
         case .running:
             startAnimation(runFrames)
-        case .jumping:
-            startAnimation(jumpFrames, false, false)
+        //case .jumping:
+          //  startAnimation(jumpFrames, false, false)
+        }
+    }
+    
+    func activatePowerup(active : Bool) {
+        if active {
+            
+            guard let powerUpEffect = ParticleHelper.addParticleEffect(name: GameConstants.Strings.powerUpEmitter, particlePositionRange: CGVector(dx: 0.0, dy: size.height), position: CGPoint(x: -size.width, y: 0.0)) else { return }
+            powerUpEffect.zPosition = GameConstants.ZPositions.object
+            
+            addChild(powerUpEffect)
+            isInvicible = true
+            run(SKAction.wait(forDuration: 5.0), completion: {
+                self.activatePowerup(active: false)
+            })
+        } else {
+            isInvicible = false
+            ParticleHelper.removeParticleEffect(name: GameConstants.Strings.powerUpEmitter, from: self)
         }
     }
     
     private func startAnimation(_ frames : [SKTexture], _ resize: Bool = true, _ restore: Bool = true) {
         if frames.count > 0 {
-            self.run(SKAction.repeatForever(SKAction.animate(with: frames, timePerFrame: 0.05, resize: resize, restore: restore)))
+            self.run(SKAction.repeatForever(SKAction.animate(with: frames, timePerFrame: 0.05, resize: resize, restore: restore)), withKey: "movement")
         } else {
-            
             print("no frames to run.")
         }
     }

@@ -21,7 +21,6 @@ class PhysicsHelper {
             sprite.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: sprite.size.width / 2, height: sprite.size.height))
             sprite.physicsBody!.restitution = 0.0
             sprite.physicsBody!.allowsRotation = false
-            
             sprite.physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.player
             sprite.physicsBody!.collisionBitMask = GameConstants.PhysicsCategories.ground | GameConstants.PhysicsCategories.finish
             sprite.physicsBody!.contactTestBitMask = GameConstants.PhysicsCategories.all
@@ -32,6 +31,7 @@ class PhysicsHelper {
             sprite.physicsBody = SKPhysicsBody(rectangleOf: sprite.size)
             sprite.physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.enemy
         case GameConstants.Strings.coinName,
+             GameConstants.Strings.powerUpName,
              _ where GameConstants.Strings.superCoinNames.contains(name):
             sprite.physicsBody = SKPhysicsBody(circleOfRadius: sprite.size.width / 2)
             sprite.physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.collectible

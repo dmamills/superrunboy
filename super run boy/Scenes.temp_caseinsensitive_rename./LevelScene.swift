@@ -95,10 +95,36 @@ class LevelScene : SKScene {
         }
     }
     
+    func createAndShowPopupNode(for level: Int) {
+        self.level = level
+        popupLayer = SKNode()
+        popupLayer.position = CGPoint(x: frame.midX, y: frame.midY)
+        
+        let shadowLayer = SKSpriteNode(texture: nil, color: .darkGray, size: frame.size)
+        shadowLayer.alpha = 0.7
+        shadowLayer.isUserInteractionEnabled = false
+        shadowLayer.zPosition = GameConstants.ZPositions.player
+        popupLayer.addChild(shadowLayer)
+        
+        let levelKey = "Level_\(world!)-\(level)"
+        let popup = ScorePopupNode(buttonHandlerDelegate: self, title: "World \(world!+1) Level \(level)", level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: ScoreManager.getCurrentScore(for: levelKey)[GameConstants.Strings.scoreScoreKey]!, coins: 4, animated: false)
+        
+        popup.add(buttons: [3, 1])
+        
+        popup.scale(to: frame.size, width: false, multiplier: 0.8)
+        popup.zPosition = GameConstants.ZPositions.hud
+        popupLayer.addChild(popup)
+        
+        popupLayer.alpha = 0.0
+        addChild(popupLayer)
+        popupLayer.run(SKAction.fadeIn(withDuration: 0.2))
+    }
+    
     func buttonHandler(index : Int) {
         switch index {
         case 1,2,3,4,5,6,7,8,9:
-            sceneManagerDelegate?.presentGameScene(for: index, in: world)
+            createAndShowPopupNode(for: index)
+            //sceneManagerDelegate?.presentGameScene(for: index, in: world)
             break
         case 10:
             sceneManagerDelegate?.presentLevelScene(for: world + 1)
@@ -120,8 +146,10 @@ extension LevelScene : PopupButtonHandlerDelegate {
         switch index {
         case 1: // play
             sceneManagerDelegate?.presentGameScene(for: level, in: world)
-        case 3: // home?
-            break
+        case 3: // cancel
+            popupLayer.run(SKAction.fadeOut(withDuration: 0.2), completion: {
+                self.popupLayer.removeFromParent()
+            })
         default:
             break
         }

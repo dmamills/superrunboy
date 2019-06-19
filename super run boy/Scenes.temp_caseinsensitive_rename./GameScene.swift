@@ -14,10 +14,13 @@ enum GameState {
 
 class GameScene : SKScene {
     
-    var level = "Level_0-1"
+    var levelKey = "Level_0-1"
+    var world : Int
+    var level : Int
     
     var worldLayer : Layer!
     var backgroundLayer : RepeatingLayer!
+    var foregroundLayer : RepeatingLayer!
     var mapNode : SKNode!
     var tileMap : SKTileMapNode!
     
@@ -31,6 +34,7 @@ class GameScene : SKScene {
     var popup : PopupNode?
     var hudDelegate : HUDDelegate?
     var sceneManagerDelegate : SceneManagerDelegate?
+    var soundPlayer = SoundPlayer()
     
     var lastTime : TimeInterval = 0
     var dt : TimeInterval = 0
@@ -48,6 +52,18 @@ class GameScene : SKScene {
         }
     }
     
+    init(size: CGSize, level : Int, world : Int, sceneManagerDelegate : SceneManagerDelegate) {
+        self.world = world
+        self.level = level
+        self.levelKey = "Level_\(world)-\(level)"
+        self.sceneManagerDelegate = sceneManagerDelegate
+        super.init(size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("no")
+    }
+    
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = CGVector(dx: CGFloat(0.0), dy: CGFloat(-6.0))
@@ -55,7 +71,7 @@ class GameScene : SKScene {
         physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x: frame.minX, y: frame.minY), to: CGPoint(x: frame.maxX, y: frame.minY))
         physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.frame
         createLayers()
-        loadLevel(named: level)
+        loadLevel(named: levelKey)
         loadTileMap()
         createPlayer()
         addHud()
@@ -75,7 +91,7 @@ class GameScene : SKScene {
         addChild(backgroundLayer)
         
         for i in 0...1 {
-            let bgImage = SKSpriteNode(imageNamed: GameConstants.Strings.desertBackground)
+            let bgImage = SKSpriteNode(imageNamed: GameConstants.Strings.worldBackgrounds[world])
             bgImage.name = String(i)
             bgImage.scale(to: frame.size, width: false, multiplier: 1.0)
             bgImage.anchorPoint = CGPoint.zero
@@ -86,10 +102,28 @@ class GameScene : SKScene {
         
         backgroundLayer.zPosition = GameConstants.ZPositions.farBG
         backgroundLayer.layerVelocity = CGPoint(x: -100.0, y: 0.0)
+        
+        if world == 1 {
+            
+            foregroundLayer = RepeatingLayer()
+            foregroundLayer.zPosition = GameConstants.ZPositions.hud
+            addChild(foregroundLayer)
+            
+            for i in 0...1 {
+                let foregroundImage = SKSpriteNode(imageNamed: GameConstants.Strings.foregroundLayer)
+                foregroundImage.name = String(i)
+                foregroundImage.scale(to: frame.size, width: false, multiplier: 1/15)
+                foregroundImage.anchorPoint = CGPoint.zero
+                foregroundImage.position = CGPoint(x: 0.0 + CGFloat(i) * foregroundImage.size.width, y: 0.0)
+                foregroundLayer.addChild(foregroundImage)
+            }
+            
+            foregroundLayer.layerVelocity = CGPoint(x: -300.0, y: 0.0)
+        }
     }
     
     func loadLevel(named : String) {
-        if let levelNode = SKNode.unarchiveFromFile(level) {
+        if let levelNode = SKNode.unarchiveFromFile(levelKey) {
             mapNode = levelNode
             worldLayer.addChild(mapNode)
         }
@@ -154,7 +188,7 @@ class GameScene : SKScene {
             popup!.add(buttons: [0, 3, 2])
             break
         default:
-            popup = ScorePopupNode(buttonHandlerDelegate: self, title: title, level: level, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: coins, coins: superCoins, animated: true)
+            popup = ScorePopupNode(buttonHandlerDelegate: self, title: title, level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: coins, coins: superCoins, animated: true)
             popup!.add(buttons: [0, 2])
             break
         }
@@ -169,7 +203,7 @@ class GameScene : SKScene {
     func jump() {
         player.isJumping = true
         player.turnGravity(on: false)
-        player.state = .jumping
+       // player.state = .jumping
         
         player.run(player.userData?.value(forKey: GameConstants.Strings.jumpUpActionKey) as! SKAction, completion: {
             if self.touch {
@@ -204,6 +238,10 @@ class GameScene : SKScene {
         case GameConstants.Strings.coinName,
              _ where GameConstants.Strings.superCoinNames.contains(sprite.name!):
             collectCoin(sprite: sprite)
+        case GameConstants.Strings.powerUpName:
+            player.activatePowerup(active: true)
+            run(soundPlayer.powerupSound)
+            sprite.removeFromParent()
         default:
             break
         }
@@ -211,16 +249,16 @@ class GameScene : SKScene {
     
     func collectCoin(sprite: SKSpriteNode) {
         if(sprite.name! == GameConstants.Strings.coinName) {
+            run(soundPlayer.coinSound)
             coins += 1
             hudDelegate!.updateCoinLabel(coins: coins)
         } else {
             superCoins += 1
             for index in 0..<3 {
                 if GameConstants.Strings.superCoinNames[index] == sprite.name! {
-            hudDelegate?.addSuperCoin(index: index)
+                    hudDelegate?.addSuperCoin(index: index)
                 }
             }
-            
         }
         
         if let coinDust = ParticleHelper.addParticleEffect(name: GameConstants.Strings.coinDustEmitter, particlePositionRange: CGVector(dx: 5.0, dy: 5.0), position: CGPoint.zero) {
@@ -250,6 +288,7 @@ class GameScene : SKScene {
         default:
             deathAnimation = SKAction.animate(with: player.dieFrames, timePerFrame: 0.1, resize: true, restore: true)
         }
+        run(soundPlayer.deathSound)
         player.run(deathAnimation) {
             self.player.removeFromParent()
             self.createAndShowPopup(type: 1, title: GameConstants.Strings.failedKey)
@@ -257,6 +296,13 @@ class GameScene : SKScene {
     }
     
     func finishGame() {
+        
+        run(soundPlayer.completedSound)
+        //Player hit top off linish line
+        if player.position.y > frame.size.height * 0.7 {
+            coins += 10
+        }
+        
         gameState = .finished
         var stars = 0
         let percentage = CGFloat(coins) / 100.0
@@ -275,8 +321,14 @@ class GameScene : SKScene {
             GameConstants.Strings.scoreCoinsKey: superCoins,
         ]
         
-        ScoreManager.compare(scores: [scores], in: level)
+        ScoreManager.compare(scores: [scores], in: levelKey)
         createAndShowPopup(type: 1, title: GameConstants.Strings.completedKey)
+        
+        if level < 9 {
+            let nextLevelKey = "Level_\(world)-\(level+1)"
+            UserDefaults.standard.set(true, forKey: nextLevelKey)
+            UserDefaults.standard.synchronize()
+        }
     }
     
     override func didSimulatePhysics() {
@@ -326,6 +378,10 @@ class GameScene : SKScene {
         if gameState == .ongoing {
             worldLayer.update(dt)
             backgroundLayer.update(dt)
+            
+            if world == 1 {
+                foregroundLayer.update(dt)
+            }
         }
     }
 }
@@ -339,15 +395,13 @@ extension GameScene : SKPhysicsContactDelegate {
         switch contactMask {
         //if it matches player + ground, the player is no longer airborne/jumping
         case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.ground:
-            print("player hit ground")
             player.isJumping = false
             brake = false
             player.state = gameState == .ongoing ? .running : .idle
-             
-         //player has hit finish line
-         case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.finish:
+        case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.finish:
             finishGame()
         case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.enemy:
+            if player.isInvicible { return }
             die(0)
         case  GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.frame:
             physicsBody = nil
@@ -379,10 +433,9 @@ extension GameScene : PopupButtonHandlerDelegate {
         case 0: //menu
             sceneManagerDelegate?.presentMenuScene()
         case 1: //play
-            break
+            sceneManagerDelegate?.presentLevelScene(for: world)
         case 2: //retry
-            sceneManagerDelegate?.presentGameScene(for: 1, in: 0)
-            break
+            sceneManagerDelegate?.presentGameScene(for: level, in: world)
         case 3: //cancel
             popup!.run(SKAction.fadeOut(withDuration: 0.2), completion: {
                 self.popup!.removeFromParent()

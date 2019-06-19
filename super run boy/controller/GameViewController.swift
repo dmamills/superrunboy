@@ -8,7 +8,9 @@
 
 import UIKit
 import SpriteKit
-import GameplayKit
+import AVFoundation
+
+var backgroundMusicPlayer : AVAudioPlayer!
 
 class GameViewController: UIViewController {
 
@@ -17,6 +19,16 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         presentMenuScene()
+     //   startBackgroundMusic()
+    }
+    
+    func startBackgroundMusic() {
+        let path = Bundle.main.path(forResource:"background", ofType: "wav")
+        let url = URL(fileURLWithPath: path!)
+        
+        backgroundMusicPlayer = try! AVAudioPlayer(contentsOf: url)
+        backgroundMusicPlayer.numberOfLoops = -1
+        backgroundMusicPlayer.play()
     }
 }
 
@@ -38,9 +50,7 @@ extension GameViewController : SceneManagerDelegate {
     }
     
     func presentGameScene(for level: Int, in world: Int) {
-        let scene = GameScene(size: view.bounds.size)
-        scene.level = "Level_\(world)-\(level)"
-        scene.sceneManagerDelegate = self
+        let scene = GameScene(size: view.bounds.size, level: level, world: world, sceneManagerDelegate: self)
         scene.scaleMode = .aspectFill
         present(scene: scene)
     }

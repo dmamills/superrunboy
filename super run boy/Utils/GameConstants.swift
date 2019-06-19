@@ -27,6 +27,8 @@ class GameConstants {
         static let groundTiles = "Ground Tiles"
         static let desertBackground = "DesertBackground"
         static let grassBackground = "GrassBackground"
+        static let menuBackground = "MenuBackground"
+        static let foregroundLayer = "ForegroundLayer"
         static let worldBackgrounds = ["DesertBackground", "GrassBackground"]
         
         static let playerName = "player"
@@ -48,6 +50,7 @@ class GameConstants {
         static let smallPopup = "PopupSmall"
         static let bannerName = "Banner"
         static let popupButtonNames = ["MenuButton", "PlayButton", "RetryButton", "CancelButton"]
+        static let powerUpName = "PowerUp"
         
         static let scoreScoreKey = "score"
         static let scoreCoinsKey = "coins"
@@ -75,6 +78,7 @@ class GameConstants {
         
         static let coinDustEmitter = "CoinDustEmitter"
         static let jumpBrakeEmitter = "JumpBrakeEmitter"
+        static let powerUpEmitter = "PowerUpEmitter"
         
         static let font = "UnanimousInverted-BRK-"
         

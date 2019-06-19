@@ -33,7 +33,7 @@ class GameHUD : SKSpriteNode, HUDDelegate {
     }
     
     private func createSuperCoin() {
-        superCoinCounter.position = CGPoint(x: frame.minX + superCoinCounter.size.width / 3, y: frame.midY)
+        superCoinCounter.position = CGPoint(x: frame.minX + superCoinCounter.size.width / 4, y: frame.midY)
         superCoinCounter.zPosition = GameConstants.ZPositions.hud
         
         for i in 0..<3 {
