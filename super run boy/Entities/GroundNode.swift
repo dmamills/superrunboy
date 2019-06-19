@@ -10,12 +10,12 @@ import SpriteKit
 
 class GroundNode : SKSpriteNode {
     
+    private var activeBody : SKPhysicsBody?
     var isBodyActive : Bool = false {
         didSet {
             physicsBody = isBodyActive ? activeBody! : nil
         }
     }
-    private var activeBody : SKPhysicsBody?
     
     init(with size: CGSize) {
         super.init(texture: nil, color: .clear, size: size)
@@ -24,7 +24,6 @@ class GroundNode : SKSpriteNode {
         let endPoint = CGPoint(x: size.width, y: size.height)
         
         activeBody = SKPhysicsBody(edgeFrom: initialPoint, to: endPoint)
-        
         activeBody!.restitution = 0.0
         activeBody!.categoryBitMask = GameConstants.PhysicsCategories.ground
         activeBody!.collisionBitMask = GameConstants.PhysicsCategories.player

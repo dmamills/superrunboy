@@ -13,20 +13,18 @@ enum PlayerState {
 }
 
 class Player : SKSpriteNode {
-    // die idle run jump
+  
+    public var isJumping : Bool = false
+    var runFrames = [SKTexture]()
+    var idleFrames = [SKTexture]()
+    var jumpFrames = [SKTexture]()
+    var dieFrames = [SKTexture]()
+    
     var state : PlayerState = .idle {
         willSet {
             animate(for: newValue)
         }
     }
-    
-    public var isJumping : Bool = false
-    
-    // animation textures
-    var runFrames = [SKTexture]()
-    var idleFrames = [SKTexture]()
-    var jumpFrames = [SKTexture]()
-    var dieFrames = [SKTexture]()
     
     func loadTextures() {
         idleFrames = AnimationHelper.loadTextures(from: SKTextureAtlas(named: GameConstants.Strings.playerIdleAtlas), with: GameConstants.Strings.idlePrefix)
@@ -65,11 +63,8 @@ class Player : SKSpriteNode {
         if frames.count > 0 {
             self.run(SKAction.repeatForever(SKAction.animate(with: frames, timePerFrame: 0.05, resize: resize, restore: restore)))
         } else {
+            
             print("no frames to run.")
         }
-    }
-    
-    func isDead() -> Bool {
-        return position.y <= 0
     }
 }

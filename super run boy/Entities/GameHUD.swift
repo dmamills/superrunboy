@@ -23,7 +23,6 @@ class GameHUD : SKSpriteNode, HUDDelegate {
     }
     
     private func createCoinLabel() {
-        
         coinLabel.verticalAlignmentMode = .center
         coinLabel.text = "0"
         coinLabel.fontSize = 200.0
@@ -34,7 +33,7 @@ class GameHUD : SKSpriteNode, HUDDelegate {
     }
     
     private func createSuperCoin() {
-        superCoinCounter.position = CGPoint(x: frame.minX + superCoinCounter.size.width / 2, y: frame.midY)
+        superCoinCounter.position = CGPoint(x: frame.minX + superCoinCounter.size.width / 3, y: frame.midY)
         superCoinCounter.zPosition = GameConstants.ZPositions.hud
         
         for i in 0..<3 {

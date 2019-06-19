@@ -21,9 +21,9 @@ struct ScoreManager {
         }
         
         return [
-            GameConstants.Strings.scoreCoinsKey: 0,
-            GameConstants.Strings.scoreScoreKey: 0,
-            GameConstants.Strings.scoreStarsKey: 0,
+            coinsKey: 0,
+            scoreKey: 0,
+            starsKey: 0,
         ]
     }
     

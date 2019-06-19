@@ -21,13 +21,21 @@ class GameConstants {
     }
     
     struct Strings {
+        
+        static let gameName = "superrunboy"
+        
         static let groundTiles = "Ground Tiles"
         static let desertBackground = "DesertBackground"
+        static let grassBackground = "GrassBackground"
+        static let worldBackgrounds = ["DesertBackground", "GrassBackground"]
+        
         static let playerName = "player"
         static let playerImage = "Idle_0"
         static let groundNodeName = "ground"
         static let enemyNodeName = "Enemy"
         static let superCoinImageName = "SuperCoin"
+        static let fullStar = "StarFull"
+        static let emptyStar = "StarEmpty"
         static let superCoinNames = [ "Super1", "Super2", "Super3" ]
         
         static let playButton = "PlayButton"
@@ -38,17 +46,12 @@ class GameConstants {
         static let cancelButton = "CancelButton"
         static let largePopup = "PopupLarge"
         static let smallPopup = "PopupSmall"
-        static let fullStar = "StarFull"
-        static let emptyStar = "StarEmpty"
         static let bannerName = "Banner"
-        
         static let popupButtonNames = ["MenuButton", "PlayButton", "RetryButton", "CancelButton"]
         
         static let scoreScoreKey = "score"
         static let scoreCoinsKey = "coins"
         static let scoreStarsKey = "stars"
-        
-        static let somechange = "lol"
         
         static let playerIdleAtlas = "Player Idle Atlas"
         static let playerRunAtlas = "Player Run Atlas"
@@ -73,7 +76,11 @@ class GameConstants {
         static let coinDustEmitter = "CoinDustEmitter"
         static let jumpBrakeEmitter = "JumpBrakeEmitter"
         
-        static let font = "Unanimous-Inverted-BRK"
+        static let font = "UnanimousInverted-BRK-"
+        
+        static let pausedKey = "Paused"
+        static let completedKey = "Completed"
+        static let failedKey = "Failed"
     }
     
     //Bitmasks for physics categories
