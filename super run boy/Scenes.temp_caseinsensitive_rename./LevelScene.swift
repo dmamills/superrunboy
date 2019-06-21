@@ -15,6 +15,7 @@ class LevelScene : SKScene {
     
     var popupLayer : SKNode!
     var sceneManagerDelegate : SceneManagerDelegate?
+    let Buttons = GameConstants.Buttons.self
     
     override func didMove(to view: SKView) {
         layoutScene(for: world)
@@ -30,8 +31,9 @@ class LevelScene : SKScene {
         
         let titleLabel = SKLabelNode(fontNamed: GameConstants.Strings.font)
         titleLabel.text = "World \(world+1)"
-        titleLabel.scale(to: frame.size, width: true, multiplier: 0.1)
         titleLabel.fontSize = 200.0
+        titleLabel.verticalAlignmentMode = .center
+        titleLabel.scale(to: frame.size, width: true, multiplier: 0.5)
         titleLabel.position = CGPoint(x: frame.midX, y: frame.maxY - titleLabel.frame.size.height * 1.5)
         titleLabel.zPosition = GameConstants.ZPositions.world
         
@@ -46,9 +48,9 @@ class LevelScene : SKScene {
         
         if world != 0 {
             let worldBackButton = SpriteKitButton(defaultButtonImage: GameConstants.Strings.playButton, action: buttonHandler, index: 11)
-            worldBackButton.scale(to: frame.size, width: true, multiplier: 0.075)
-            worldBackButton.xScale *= 1
-            worldBackButton.position = CGPoint(x: frame.minX + worldBackButton.size.width / 1.5, y: frame.maxY - titleLabel.frame.size.height)
+            worldBackButton.scale(to: frame.size, width: true, multiplier: 0.15)
+            worldBackButton.xScale *= -1
+            worldBackButton.position = CGPoint(x: frame.minX + worldBackButton.size.width / 1.5, y: frame.maxY - titleLabel.frame.size.height * 1.5)
             worldBackButton.zPosition = GameConstants.ZPositions.world
             
             addChild(worldBackButton)
@@ -56,8 +58,8 @@ class LevelScene : SKScene {
         
         if world < GameConstants.Strings.worldBackgrounds.count - 1 {
             let worldNextButton = SpriteKitButton(defaultButtonImage: GameConstants.Strings.playButton, action: buttonHandler, index: 10)
-            worldNextButton.scale(to: frame.size, width: true, multiplier: 0.075)
-            worldNextButton.position = CGPoint(x: frame.maxX - worldNextButton.size.width / 1.5, y: frame.maxY - titleLabel.frame.size.height)
+            worldNextButton.scale(to: frame.size, width: true, multiplier: 0.15)
+            worldNextButton.position = CGPoint(x: frame.maxX - worldNextButton.size.width / 1.5, y: frame.maxY - titleLabel.frame.size.height * 1.5)
             worldNextButton.zPosition = GameConstants.ZPositions.world
             
             addChild(worldNextButton)
@@ -80,7 +82,7 @@ class LevelScene : SKScene {
                 levelLabel.verticalAlignmentMode = .center
                 levelLabel.text = "\(level)"
                 
-                if !UserDefaults.standard.bool(forKey: "Level_\(world)-\(level)") && level != 1 {
+                if !UserDefaults.standard.bool(forKey: "Level_\(world)-\(level)_unlocked") && level != 1 || world == 2 {
                     levelBox.isUserInteractionEnabled = false
                     levelBox.alpha = 0.75
                 }
@@ -109,9 +111,9 @@ class LevelScene : SKScene {
         let levelKey = "Level_\(world!)-\(level)"
         let popup = ScorePopupNode(buttonHandlerDelegate: self, title: "World \(world!+1) Level \(level)", level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: ScoreManager.getCurrentScore(for: levelKey)[GameConstants.Strings.scoreScoreKey]!, coins: 4, animated: false)
         
-        popup.add(buttons: [3, 1])
+        popup.add(buttons: [Buttons.cancel, Buttons.play])
         
-        popup.scale(to: frame.size, width: false, multiplier: 0.8)
+        popup.scale(to: frame.size, width: true, multiplier: 0.8)
         popup.zPosition = GameConstants.ZPositions.hud
         popupLayer.addChild(popup)
         
@@ -122,21 +124,17 @@ class LevelScene : SKScene {
     
     func buttonHandler(index : Int) {
         switch index {
-        case 1,2,3,4,5,6,7,8,9:
+        case 1..<10:
             createAndShowPopupNode(for: index)
-            //sceneManagerDelegate?.presentGameScene(for: index, in: world)
-            break
-        case 10:
+        case Buttons.nextWorld:
             sceneManagerDelegate?.presentLevelScene(for: world + 1)
-            break
-        case 11: //previous world
+        case Buttons.previousWorld:
             sceneManagerDelegate?.presentLevelScene(for: world - 1)
-            break
-        case 12: // menu button
+        case Buttons.levelMenu:
             sceneManagerDelegate?.presentMenuScene()
             break
         default:
-            break
+            print("Unknown button index: \(index)")
         }
     }
 }
@@ -144,14 +142,14 @@ class LevelScene : SKScene {
 extension LevelScene : PopupButtonHandlerDelegate {
     func popupButton(index: Int) {
         switch index {
-        case 1: // play
+        case Buttons.play:
             sceneManagerDelegate?.presentGameScene(for: level, in: world)
-        case 3: // cancel
+        case Buttons.cancel:
             popupLayer.run(SKAction.fadeOut(withDuration: 0.2), completion: {
                 self.popupLayer.removeFromParent()
             })
         default:
-            break
+            print("Unknown button index: \(index)")
         }
     }
 }

@@ -38,12 +38,7 @@ class SpriteKitButton : SKSpriteNode {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first! as UITouch
         let location = touch.location(in: self)
-        
-        if defaultButton.contains(location) {
-            defaultButton.alpha = 0.75
-        } else {
-            defaultButton.alpha = 1.0
-        }
+        defaultButton.alpha = defaultButton.contains(location) ? 0.75 : 1.0
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {

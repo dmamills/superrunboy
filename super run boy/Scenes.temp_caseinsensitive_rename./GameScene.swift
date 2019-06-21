@@ -13,7 +13,6 @@ enum GameState {
 }
 
 class GameScene : SKScene {
-    
     var levelKey = "Level_0-1"
     var world : Int
     var level : Int
@@ -23,7 +22,8 @@ class GameScene : SKScene {
     var foregroundLayer : RepeatingLayer!
     var mapNode : SKNode!
     var tileMap : SKTileMapNode!
-    
+    var pauseButton : SpriteKitButton!
+
     var player : Player!
     var touch = false
     var brake = false
@@ -35,6 +35,7 @@ class GameScene : SKScene {
     var hudDelegate : HUDDelegate?
     var sceneManagerDelegate : SceneManagerDelegate?
     var soundPlayer = SoundPlayer()
+    let Buttons = GameConstants.Buttons.self
     
     var lastTime : TimeInterval = 0
     var dt : TimeInterval = 0
@@ -44,9 +45,11 @@ class GameScene : SKScene {
             switch newValue {
             case .ongoing:
                 player.state = .running
+                pauseButton!.alpha = 1.0
                 pauseEnemies(false)
             case .ready, .finished, .paused:
                 player.state = .idle
+                pauseButton!.alpha = 0.0
                 pauseEnemies(true)
             }
         }
@@ -104,7 +107,6 @@ class GameScene : SKScene {
         backgroundLayer.layerVelocity = CGPoint(x: -100.0, y: 0.0)
         
         if world == 1 {
-            
             foregroundLayer = RepeatingLayer()
             foregroundLayer.zPosition = GameConstants.ZPositions.hud
             addChild(foregroundLayer)
@@ -117,7 +119,7 @@ class GameScene : SKScene {
                 foregroundImage.position = CGPoint(x: 0.0 + CGFloat(i) * foregroundImage.size.width, y: 0.0)
                 foregroundLayer.addChild(foregroundImage)
             }
-            
+
             foregroundLayer.layerVelocity = CGPoint(x: -300.0, y: 0.0)
         }
     }
@@ -167,10 +169,11 @@ class GameScene : SKScene {
         hudDelegate = hud
         addChild(hud)
         
-        let pauseButton = SpriteKitButton(defaultButtonImage: GameConstants.Strings.pauseButton, action: buttonHandler, index: 0)
-        pauseButton.scale(to: frame.size, width: false, multiplier: 0.075)
-        pauseButton.position = CGPoint(x: frame.midX, y: frame.maxY - pauseButton.size.height / 0.75)
-        pauseButton.zPosition = GameConstants.ZPositions.hud
+        pauseButton = SpriteKitButton(defaultButtonImage: GameConstants.Strings.pauseButton, action: buttonHandler, index: 0)
+        pauseButton!.scale(to: frame.size, width: false, multiplier: 0.075)
+        pauseButton!.position = CGPoint(x: frame.midX, y: frame.maxY - pauseButton.size.height / 0.75)
+        pauseButton!.zPosition = GameConstants.ZPositions.hud
+        pauseButton!.alpha = 0.0
         addChild(pauseButton)
     }
     
@@ -185,11 +188,11 @@ class GameScene : SKScene {
         switch type {
         case 0:
             popup = PopupNode(withTitle: title, texture: SKTexture(imageNamed: GameConstants.Strings.smallPopup), buttonHandlerDelegate: self)
-            popup!.add(buttons: [0, 3, 2])
+            popup!.add(buttons: [Buttons.menu, Buttons.cancel, Buttons.retry])
             break
         default:
             popup = ScorePopupNode(buttonHandlerDelegate: self, title: title, level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: coins, coins: superCoins, animated: true)
-            popup!.add(buttons: [0, 2])
+            popup!.add(buttons: [Buttons.menu, Buttons.retry])
             break
         }
         
@@ -203,7 +206,7 @@ class GameScene : SKScene {
     func jump() {
         player.isJumping = true
         player.turnGravity(on: false)
-       // player.state = .jumping
+        player.state = .jumping
         
         player.run(player.userData?.value(forKey: GameConstants.Strings.jumpUpActionKey) as! SKAction, completion: {
             if self.touch {
@@ -248,8 +251,8 @@ class GameScene : SKScene {
     }
     
     func collectCoin(sprite: SKSpriteNode) {
+        run(soundPlayer.coinSound)
         if(sprite.name! == GameConstants.Strings.coinName) {
-            run(soundPlayer.coinSound)
             coins += 1
             hudDelegate!.updateCoinLabel(coins: coins)
         } else {
@@ -271,16 +274,15 @@ class GameScene : SKScene {
         }
     }
 
-    // 0 == hit enemy, 1 == fell off
     func die(_ reason : Int) {
         gameState = .finished
         player.turnGravity(on: false)
         player.physicsBody = nil
         var deathAnimation : SKAction!
         switch reason {
-        case 0:
+        case GameConstants.DeathReasons.enemy:
             deathAnimation = SKAction.animate(with: player.dieFrames, timePerFrame: 0.1, resize: true, restore: true)
-        case 1:
+        case GameConstants.DeathReasons.fell:
             let up = SKAction.moveTo(y: frame.midY, duration: 0.4)
             let wait = SKAction.wait(forDuration: 0.2)
             let down = SKAction.moveTo(y: -player.size.height, duration: 0.4)
@@ -325,12 +327,12 @@ class GameScene : SKScene {
         createAndShowPopup(type: 1, title: GameConstants.Strings.completedKey)
         
         if level < 9 {
-            let nextLevelKey = "Level_\(world)-\(level+1)"
+            let nextLevelKey = "Level_\(world)-\(level+1)_unlocked"
             UserDefaults.standard.set(true, forKey: nextLevelKey)
             UserDefaults.standard.synchronize()
         }
     }
-    
+
     override func didSimulatePhysics() {
         for node in tileMap[GameConstants.Strings.groundNodeName] {
             guard let groundNode = node as? GroundNode else { return }
@@ -402,10 +404,10 @@ extension GameScene : SKPhysicsContactDelegate {
             finishGame()
         case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.enemy:
             if player.isInvicible { return }
-            die(0)
+            die(GameConstants.DeathReasons.enemy)
         case  GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.frame:
             physicsBody = nil
-            die(1)
+            die(GameConstants.DeathReasons.fell)
         case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.collectible:
             let collectible = contact.bodyA.node?.name == player.name ? contact.bodyB.node : contact.bodyA.node as! SKSpriteNode
             handleCollectable(sprite: collectible as! SKSpriteNode)
@@ -430,20 +432,20 @@ extension GameScene : SKPhysicsContactDelegate {
 extension GameScene : PopupButtonHandlerDelegate {
     func popupButton(index: Int) {
         switch index {
-        case 0: //menu
+        case Buttons.menu:
             sceneManagerDelegate?.presentMenuScene()
-        case 1: //play
+        case Buttons.play:
             sceneManagerDelegate?.presentLevelScene(for: world)
-        case 2: //retry
+        case Buttons.retry:
             sceneManagerDelegate?.presentGameScene(for: level, in: world)
-        case 3: //cancel
+        case Buttons.cancel:
             popup!.run(SKAction.fadeOut(withDuration: 0.2), completion: {
                 self.popup!.removeFromParent()
                 self.gameState = .ongoing
             })
             break
         default:
-            break
+            print("Unknown button index: \(index)")
         }
     }
 }

@@ -9,7 +9,7 @@
 import SpriteKit
 
 enum PlayerState {
-    case idle, running //, jumping
+    case idle, running, jumping
 }
 
 class Player : SKSpriteNode {
@@ -56,8 +56,8 @@ class Player : SKSpriteNode {
             startAnimation(idleFrames)
         case .running:
             startAnimation(runFrames)
-        //case .jumping:
-          //  startAnimation(jumpFrames, false, false)
+        case .jumping:
+            startAnimation(jumpFrames, false, false)
         }
     }
     

@@ -27,9 +27,9 @@ class GameConstants {
         static let groundTiles = "Ground Tiles"
         static let desertBackground = "DesertBackground"
         static let grassBackground = "GrassBackground"
-        static let menuBackground = "MenuBackground"
+        static let menuBackground = "preview"
         static let foregroundLayer = "ForegroundLayer"
-        static let worldBackgrounds = ["DesertBackground", "GrassBackground"]
+        static let worldBackgrounds = ["DesertBackground", "GrassBackground", "DesertBackground"]
         
         static let playerName = "player"
         static let playerImage = "Idle_0"
@@ -50,6 +50,7 @@ class GameConstants {
         static let smallPopup = "PopupSmall"
         static let bannerName = "Banner"
         static let popupButtonNames = ["MenuButton", "PlayButton", "RetryButton", "CancelButton"]
+        
         static let powerUpName = "PowerUp"
         
         static let scoreScoreKey = "score"
@@ -98,5 +99,20 @@ class GameConstants {
         static let enemy : UInt32 = 0x1 << 4
         static let frame : UInt32 = 0x1 << 5
         static let ceiling : UInt32 = 0x1 << 6
+    }
+    
+    struct Buttons {
+        static let menu : Int = 0
+        static let play : Int = 1
+        static let retry : Int = 2
+        static let cancel : Int = 3
+        static let nextWorld : Int = 10
+        static let previousWorld : Int = 11
+        static let levelMenu : Int = 12
+    }
+
+    struct DeathReasons {
+        static let enemy : Int = 0
+        static let fell : Int = 1
     }
 }

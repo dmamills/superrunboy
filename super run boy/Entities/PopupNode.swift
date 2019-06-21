@@ -24,12 +24,24 @@ class PopupNode : SKSpriteNode {
     }
     
     func add(buttons: [Int]) {
+
+        if buttons.count == 1 {
+            let button = buttons.first!
+            let buttonToAdd = SpriteKitButton(defaultButtonImage: GameConstants.Strings.popupButtonNames[button], action: buttonHandlerDelegate.popupButton, index: button)
+            buttonToAdd.position = CGPoint(x: frame.midX,y: frame.minY)
+            buttonToAdd.zPosition = GameConstants.ZPositions.hud + 2
+            buttonToAdd.scale(to: frame.size, width: true, multiplier: 0.25)
+
+            addChild(buttonToAdd)
+            return
+        }
+
         let scalar = 1.0 / CGFloat(buttons.count - 1)
         for (index, button) in buttons.enumerated() {
             let buttonToAdd = SpriteKitButton(defaultButtonImage: GameConstants.Strings.popupButtonNames[button], action: buttonHandlerDelegate.popupButton, index: button)
             
             buttonToAdd.position = CGPoint(x: -frame.maxX/2 + CGFloat(index) * scalar * (frame.size.width*0.5),y: frame.minY)
-            buttonToAdd.zPosition = GameConstants.ZPositions.hud
+            buttonToAdd.zPosition = GameConstants.ZPositions.hud + 2
             buttonToAdd.scale(to: frame.size, width: true, multiplier: 0.25)
             
             addChild(buttonToAdd)

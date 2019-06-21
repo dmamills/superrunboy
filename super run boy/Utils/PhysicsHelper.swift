@@ -8,12 +8,6 @@
 
 import SpriteKit
 
-struct Platform {
-    let x : CGFloat
-    let y : CGFloat
-    let size : CGSize
-}
-
 class PhysicsHelper {
     static func addBody(to sprite: SKSpriteNode, with name: String) {
         switch name {
