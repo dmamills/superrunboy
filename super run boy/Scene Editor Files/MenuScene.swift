@@ -15,12 +15,11 @@ class MenuScene : SKScene {
     var popup : PopupNode!
 
     let playButtonImage = GameConstants.Strings.playButton
-    let settingsButtonImage = GameConstants.Strings.emptyButton
+    let settingsButtonImage = GameConstants.Strings.settingsButton
 
     //var playerRunning : SKSpriteNode!
     //var player = Player()
     //let playerY : CGFloat = 90.0
-
 
     init(size: CGSize, backgroundMusicDelegate : BackgroundMusicDelegate) {
         self.backgroundMusicDelegate = backgroundMusicDelegate

@@ -243,7 +243,7 @@ class GameScene : SKScene {
             collectCoin(sprite: sprite)
         case GameConstants.Strings.powerUpName:
             player.activatePowerup(active: true)
-            run(soundPlayer.powerupSound)
+            run(soundPlayer.get(name: GameConstants.Sounds.powerup))
             sprite.removeFromParent()
         default:
             break
@@ -251,7 +251,7 @@ class GameScene : SKScene {
     }
     
     func collectCoin(sprite: SKSpriteNode) {
-        run(soundPlayer.coinSound)
+        run(soundPlayer.get(name: GameConstants.Sounds.coin))
         if(sprite.name! == GameConstants.Strings.coinName) {
             coins += 1
             hudDelegate!.updateCoinLabel(coins: coins)
@@ -290,7 +290,8 @@ class GameScene : SKScene {
         default:
             deathAnimation = SKAction.animate(with: player.dieFrames, timePerFrame: 0.1, resize: true, restore: true)
         }
-        run(soundPlayer.deathSound)
+        run(soundPlayer.get(name: GameConstants.Sounds.gameover))
+
         player.run(deathAnimation) {
             self.player.removeFromParent()
             self.createAndShowPopup(type: 1, title: GameConstants.Strings.failedKey)
@@ -298,8 +299,7 @@ class GameScene : SKScene {
     }
     
     func finishGame() {
-        
-        run(soundPlayer.completedSound)
+        run(soundPlayer.get(name: GameConstants.Sounds.completed))
         //Player hit top off linish line
         if player.position.y > frame.size.height * 0.7 {
             coins += 10

@@ -46,6 +46,9 @@ class GameConstants {
         static let pauseButton = "PauseButton"
         static let emptyButton = "EmptyButton"
         static let cancelButton = "CancelButton"
+        static let settingsButton = "SettingsButton"
+        static let soundOnButton = "SoundOnButton"
+        static let soundMutedButton = "SoundMutedButton"
         static let largePopup = "PopupLarge"
         static let smallPopup = "PopupSmall"
         static let bannerName = "Banner"
@@ -86,6 +89,17 @@ class GameConstants {
         static let pausedKey = "Paused"
         static let completedKey = "Completed"
         static let failedKey = "Failed"
+
+        static let musicMuteKey = "music_muted"
+        static let soundMuteKey = "sound_muted"
+    }
+
+    struct Sounds {
+        static let button = "button"
+        static let coin = "coin"
+        static let completed = "completed"
+        static let gameover = "gameover"
+        static let powerup = "powerup"
     }
     
     //Bitmasks for physics categories

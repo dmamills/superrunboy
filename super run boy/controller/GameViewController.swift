@@ -19,18 +19,16 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         presentMenuScene()
-        // TODO: get better music, and add mute button
         startBackgroundMusic()
     }
     
     func startBackgroundMusic() {
-
-        if !UserDefaults.standard.bool(forKey: "music_muted") {
-            let path = Bundle.main.path(forResource:"background", ofType: "wav")
-            let url = URL(fileURLWithPath: path!)
-
-            backgroundMusicPlayer = try! AVAudioPlayer(contentsOf: url)
-            backgroundMusicPlayer.numberOfLoops = -1
+        let path = Bundle.main.path(forResource:"background", ofType: "wav")
+        let url = URL(fileURLWithPath: path!)
+        backgroundMusicPlayer = try! AVAudioPlayer(contentsOf: url)
+        backgroundMusicPlayer.numberOfLoops = -1
+        
+        if !UserDefaults.standard.bool(forKey: GameConstants.Strings.musicMuteKey) {
             backgroundMusicPlayer.play()
         }
     }

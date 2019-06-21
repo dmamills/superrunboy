@@ -9,6 +9,15 @@
 import SpriteKit
 
 class SoundPlayer {
+
+    func get(name: String) -> SKAction {
+
+        if UserDefaults.standard.bool(forKey: GameConstants.Strings.soundMuteKey) {
+            return SKAction.wait(forDuration: 0.0)
+        }
+
+        return SKAction.playSoundFileNamed(name, waitForCompletion: false)
+    }
     
     let buttonSound = SKAction.playSoundFileNamed("button", waitForCompletion: false)
     let coinSound = SKAction.playSoundFileNamed("coin", waitForCompletion: false)
