@@ -39,9 +39,62 @@ class PhysicsHelper {
         }
     }
 
+    static func addMovableEnemy(tilemap : SKTileMapNode, sprite : SKSpriteNode, range : Int) {
+        sprite.physicsBody = SKPhysicsBody(rectangleOf: sprite.size)
+        sprite.physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.enemy
+        sprite.physicsBody!.contactTestBitMask = GameConstants.PhysicsCategories.player
+        sprite.physicsBody!.isDynamic = false
+
+        // setup action range
+        let startingRow = tilemap.tileRowIndex(fromPosition: sprite.position)
+        let startingColumn = tilemap.tileColumnIndex(fromPosition: sprite.position)
+
+        var startX : CGPoint?
+        var endX : CGPoint?
+
+        //check to make sure range stays on ground tiles
+        for i in 0...range {
+            if startX == nil {
+                if !tileExistsAndIsGround(tilemap: tilemap, atColumn: startingColumn - i, row: startingRow - 1) {
+                    startX = tilemap.centerOfTile(atColumn: startingColumn - (i-1), row: startingRow)
+                }
+            }
+
+            if endX == nil {
+                if !tileExistsAndIsGround(tilemap: tilemap, atColumn: startingColumn + i, row: startingRow - 1) {
+                    endX = tilemap.centerOfTile(atColumn: startingColumn + (i-1), row: startingRow)
+                }
+            }
+        }
+
+        // if start/end not set, full range is safe
+        if startX == nil {
+            startX = tilemap.centerOfTile(atColumn: startingColumn - range, row: startingRow)
+        }
+
+        if endX == nil {
+            endX = tilemap.centerOfTile(atColumn: startingColumn + range, row: startingRow)
+        }
+
+        //create action
+        let moveLeft = SKAction.move(to: startX!, duration: 1.0)
+        let moveRight = SKAction.move(to: endX!, duration: 1.0)
+        sprite.run(SKAction.repeatForever(SKAction.sequence([moveLeft, moveRight])))
+    }
+
+    static func tileExistsAndIsGround(tilemap : SKTileMapNode, atColumn : Int, row: Int) -> Bool {
+        let nextTile = tilemap.tileDefinition(atColumn: atColumn, row: row)
+        if nextTile == nil {
+            return false
+        } else {
+            guard let isGround = nextTile?.userData?.value(forKey: "ground") as? Bool else { return false }
+            return isGround
+        }
+    }
+
     static func addBody(to tileMap : SKTileMapNode, with name : String) {
         let tileSize = tileMap.tileSize
-        
+
         for row in 0..<tileMap.numberOfRows {
             var tiles = [Int]()
             for column in 0..<tileMap.numberOfColumns {

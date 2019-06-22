@@ -148,7 +148,7 @@ class GameScene : SKScene {
                     levelCoinTotal += x * y
                 }
 
-                ObjectHelper.handleChild(sprite: sprite, with: sprite.name!)
+                ObjectHelper.handleChild(sprite: sprite, with: sprite.name!, tileMap: tileMap!)
             }
         }
 

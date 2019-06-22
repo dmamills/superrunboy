@@ -9,13 +9,29 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "super run boy/scenes/GameScene.swift"
-            timestampString = "582329817.262556"
+            filePath = "super run boy/Scenes/GameScene.swift"
+            timestampString = "582873362.142982"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "123"
             endingLineNumber = "123"
-            landmarkName = "createPlayer()"
+            landmarkName = "createLayers()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "super run boy/Utils/PhysicsHelper.swift"
+            timestampString = "582873362.143052"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "addMovableEnemy(tilemap:sprite:range:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

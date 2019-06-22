@@ -9,12 +9,20 @@
 import SpriteKit
     
 class ObjectHelper {
-    static func handleChild(sprite : SKSpriteNode, with name: String) {
+    static func handleChild(sprite : SKSpriteNode, with name: String, tileMap: SKTileMapNode?) {
         switch name {
-        case GameConstants.Strings.finishLine, GameConstants.Strings.enemyNodeName,
+        case GameConstants.Strings.finishLine,
              GameConstants.Strings.powerUpName,
              _ where GameConstants.Strings.superCoinNames.contains(name):
             PhysicsHelper.addBody(to: sprite, with: name)
+        case GameConstants.Strings.enemyNodeName:
+            print("enemy node")
+            if let movement = sprite.userData?.value(forKey: "moveable") as? Int {
+                print("got moveable", movement)
+                PhysicsHelper.addMovableEnemy(tilemap: tileMap!, sprite: sprite, range: movement)
+            } else {
+                PhysicsHelper.addBody(to: sprite, with: name)
+            }
         default:
             let component = name.components(separatedBy: NSCharacterSet.decimalDigits.inverted)
             if let rows = Int(component[0]), let columns = Int(component[1]) {
