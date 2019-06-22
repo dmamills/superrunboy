@@ -23,6 +23,7 @@ class GameScene : SKScene {
     var mapNode : SKNode!
     var tileMap : SKTileMapNode!
     var pauseButton : SpriteKitButton!
+    var startText : SKLabelNode!
 
     var player : Player!
     var touch = false
@@ -30,6 +31,7 @@ class GameScene : SKScene {
     
     var coins = 0
     var superCoins = 0
+    var levelCoinTotal = 0
     
     var popup : PopupNode?
     var hudDelegate : HUDDelegate?
@@ -139,9 +141,18 @@ class GameScene : SKScene {
         
         for child in groundTiles.children {
             if let sprite = child as? SKSpriteNode, sprite.name != nil {
+                // update level coin total when coin node found
+                if sprite.name!.matches(for: "^[0-9]+x[0-9]+$") {
+                    let x = Int(sprite.name!.split(separator: "x")[0])!
+                    let y = Int(sprite.name!.split(separator: "x")[1])!
+                    levelCoinTotal += x * y
+                }
+
                 ObjectHelper.handleChild(sprite: sprite, with: sprite.name!)
             }
         }
+
+        print("Level total coin count: \(levelCoinTotal)")
     }
     
     func createPlayer() {
@@ -153,10 +164,9 @@ class GameScene : SKScene {
         player.name = GameConstants.Strings.playerName
         PhysicsHelper.addBody(to: player, with: player.name!)
         player.zPosition = 3
-        player.state = .idle
-        
-        //load textures before adding to world
+
         player.loadTextures()
+        player.state = .idle
         player.loadActions(frame.size.height)
         
         addChild(player)
@@ -175,6 +185,14 @@ class GameScene : SKScene {
         pauseButton!.zPosition = GameConstants.ZPositions.hud
         pauseButton!.alpha = 0.0
         addChild(pauseButton)
+
+        startText = SKLabelNode(fontNamed: GameConstants.Strings.font)
+        startText.text = "Tap to start running!"
+        startText.fontSize = 200.0
+        startText.position = CGPoint(x: frame.midX, y: frame.midY)
+        startText.scale(to: frame.size, width: true, multiplier: 0.9)
+        startText.zPosition = GameConstants.ZPositions.hud
+        addChild(startText)
     }
     
     func buttonHandler(index: Int) {
@@ -202,34 +220,7 @@ class GameScene : SKScene {
         
         addChild(popup!)
     }
-    
-    func jump() {
-        player.isJumping = true
-        player.turnGravity(on: false)
-        player.state = .jumping
-        
-        player.run(player.userData?.value(forKey: GameConstants.Strings.jumpUpActionKey) as! SKAction, completion: {
-            if self.touch {
-                self.player.run(self.player.userData?.value(forKey: GameConstants.Strings.jumpUpActionKey) as! SKAction, completion: {
-                  self.player.turnGravity(on: true)
-                })
-            }
-        })
-    }
-    
-    func brakeDescend() {
-        brake = true
-        player.physicsBody!.velocity.dy = 0.0
-        
-        if let brakeEmitter = ParticleHelper.addParticleEffect(name: GameConstants.Strings.jumpBrakeEmitter, particlePositionRange: CGVector(dx: 30.0, dy: 30.0), position: CGPoint(x: player.position.x, y: player.position.y - player.size.height/2)) {
-            brakeEmitter.zPosition = GameConstants.ZPositions.object
-            addChild(brakeEmitter)
-            player.run(player.userData?.value(forKey: GameConstants.Strings.brakeDescendActionKey) as! SKAction, completion: {
-                ParticleHelper.removeParticleEffect(name: GameConstants.Strings.jumpBrakeEmitter, from: self)
-            })
-        }
-    }
-    
+
     func pauseEnemies(_ pause : Bool) {
         for enemy in tileMap[GameConstants.Strings.enemyNodeName] {
             enemy.isPaused = pause
@@ -300,15 +291,21 @@ class GameScene : SKScene {
     
     func finishGame() {
         run(soundPlayer.get(name: GameConstants.Sounds.completed))
-        //Player hit top off linish line
+
+        // Hit the top bonus
+        // TODO: add label to let player know they hit it
         if player.position.y > frame.size.height * 0.7 {
             coins += 10
+        }
+
+        // TODO: if player collected all coins show bonus text labeel
+        if coins == levelCoinTotal {
+            print("Collected all coins!")
         }
         
         gameState = .finished
         var stars = 0
         let percentage = CGFloat(coins) / 100.0
-        
         if percentage >= 0.8 {
             stars = 3
         } else if percentage >= 0.4 {
@@ -344,17 +341,21 @@ class GameScene : SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         switch gameState {
-        case .ready, .paused:
+        case .ready:
+            gameState = .ongoing
+            startText!.removeFromParent()
+        case .paused:
             gameState = .ongoing
         case .ongoing:
             touch = true
             if !player.isJumping {
-                jump()
+                player.jump()
             } else if !brake {
-                brakeDescend()
+                brake = true
+                player.brake();
             }
         case .finished:
-            print("game done, reset!")
+            break
         }
     }
     
@@ -443,7 +444,6 @@ extension GameScene : PopupButtonHandlerDelegate {
                 self.popup!.removeFromParent()
                 self.gameState = .ongoing
             })
-            break
         default:
             print("Unknown button index: \(index)")
         }

@@ -60,10 +60,32 @@ class Player : SKSpriteNode {
             startAnimation(jumpFrames, false, false)
         }
     }
+
+    func jump() {
+        isJumping = true
+        turnGravity(on: false)
+        state = .jumping
+
+        run(userData?.value(forKey: GameConstants.Strings.jumpUpActionKey) as! SKAction, completion: {
+            self.turnGravity(on: true)
+        })
+    }
+
+    func brake() {
+
+        physicsBody!.velocity.dy = 0.0
+
+        if let brakeEmitter = ParticleHelper.addParticleEffect(name: GameConstants.Strings.jumpBrakeEmitter, particlePositionRange: CGVector(dx: 30.0, dy: 30.0), position: CGPoint(x: position.x, y: position.y - size.height/2)) {
+            brakeEmitter.zPosition = GameConstants.ZPositions.object
+            self.parent!.addChild(brakeEmitter)
+            run(userData?.value(forKey: GameConstants.Strings.brakeDescendActionKey) as! SKAction, completion: {
+                ParticleHelper.removeParticleEffect(name: GameConstants.Strings.jumpBrakeEmitter, from: self.parent!)
+            })
+        }
+    }
     
     func activatePowerup(active : Bool) {
         if active {
-            
             guard let powerUpEffect = ParticleHelper.addParticleEffect(name: GameConstants.Strings.powerUpEmitter, particlePositionRange: CGVector(dx: 0.0, dy: size.height), position: CGPoint(x: -size.width, y: 0.0)) else { return }
             powerUpEffect.zPosition = GameConstants.ZPositions.object
             

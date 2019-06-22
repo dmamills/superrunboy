@@ -23,6 +23,7 @@
 		8534E8CC22AB520E006531E7 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8534E8CB22AB520E006531E7 /* Player.swift */; };
 		853B60B422BD6D610003E4AD /* SettingsPopupNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853B60B322BD6D610003E4AD /* SettingsPopupNode.swift */; };
 		853B60B622BD77040003E4AD /* BackgroundMusicDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853B60B522BD77040003E4AD /* BackgroundMusicDelegate.swift */; };
+		853B60BA22BDBEC00003E4AD /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853B60B922BDBEC00003E4AD /* String+Extensions.swift */; };
 		853F824222BB031300E8920C /* Level_0-3.sks in Resources */ = {isa = PBXBuildFile; fileRef = 853F824122BB031300E8920C /* Level_0-3.sks */; };
 		853F824422BB04FD00E8920C /* Level_0-4.sks in Resources */ = {isa = PBXBuildFile; fileRef = 853F824322BB04FD00E8920C /* Level_0-4.sks */; };
 		853F824622BB050700E8920C /* Level_0-5.sks in Resources */ = {isa = PBXBuildFile; fileRef = 853F824522BB050700E8920C /* Level_0-5.sks */; };
@@ -93,6 +94,7 @@
 		8534E8CB22AB520E006531E7 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		853B60B322BD6D610003E4AD /* SettingsPopupNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPopupNode.swift; sourceTree = "<group>"; };
 		853B60B522BD77040003E4AD /* BackgroundMusicDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicDelegate.swift; sourceTree = "<group>"; };
+		853B60B922BDBEC00003E4AD /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		853F824122BB031300E8920C /* Level_0-3.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "Level_0-3.sks"; sourceTree = "<group>"; };
 		853F824322BB04FD00E8920C /* Level_0-4.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "Level_0-4.sks"; sourceTree = "<group>"; };
 		853F824522BB050700E8920C /* Level_0-5.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "Level_0-5.sks"; sourceTree = "<group>"; };
@@ -197,7 +199,7 @@
 				8558502822AF1D2300445169 /* Particle Emitters */,
 				8574C28622B566F700E3B43D /* Resources */,
 				8574C28122B5666E00E3B43D /* Protocols */,
-				852B45EA22AB01DA00C6C8FB /* scenes */,
+				852B45EA22AB01DA00C6C8FB /* Scenes */,
 				8534E8CA22AB51FF006531E7 /* Entities */,
 				85CFF58022AB5EBA004B3589 /* Utils */,
 				8534E8C522AB37C8006531E7 /* Layers */,
@@ -237,14 +239,14 @@
 			path = controller;
 			sourceTree = "<group>";
 		};
-		852B45EA22AB01DA00C6C8FB /* scenes */ = {
+		852B45EA22AB01DA00C6C8FB /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
 				852B45EF22AB025500C6C8FB /* GameScene.swift */,
 				8557212622B9ABA90082DE8A /* MenuScene.swift */,
 				8557212A22B9BF7F0082DE8A /* LevelScene.swift */,
 			);
-			name = scenes;
+			name = Scenes;
 			path = Scenes.temp_caseinsensitive_rename.;
 			sourceTree = "<group>";
 		};
@@ -295,6 +297,7 @@
 			isa = PBXGroup;
 			children = (
 				8534E8C322AB2AE0006531E7 /* SKNode+Extensions.swift */,
+				853B60B922BDBEC00003E4AD /* String+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -515,6 +518,7 @@
 				8557212922B9AD6E0082DE8A /* SceneManagerDelegate.swift in Sources */,
 				853B60B422BD6D610003E4AD /* SettingsPopupNode.swift in Sources */,
 				85CFF58D22AC4702004B3589 /* ObjectHelper.swift in Sources */,
+				853B60BA22BDBEC00003E4AD /* String+Extensions.swift in Sources */,
 				8574C28C22B57DC200E3B43D /* PopupNode.swift in Sources */,
 				8574C29222B57E1100E3B43D /* PopupButtonHandlerDelegate.swift in Sources */,
 				8574C29622B5909C00E3B43D /* ScoreManager.swift in Sources */,
