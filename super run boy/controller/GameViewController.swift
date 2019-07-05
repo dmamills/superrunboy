@@ -14,10 +14,11 @@ var backgroundMusicPlayer : AVAudioPlayer!
 
 class GameViewController: UIViewController {
 
-    let DEBUG : Bool = true
+    let DEBUG : Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         presentMenuScene()
         startBackgroundMusic()
     }

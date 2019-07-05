@@ -59,12 +59,15 @@ class GameConstants {
         static let scoreScoreKey = "score"
         static let scoreCoinsKey = "coins"
         static let scoreStarsKey = "stars"
+        static let scoreTotalKey = "total"
         
         static let playerIdleAtlas = "Player Idle Atlas"
         static let playerRunAtlas = "Player Run Atlas"
         static let playerJumpAtlas = "Player Jump Atlas"
         static let playerDieAtlas = "Player Die Atlas"
         static let coinRotateAltas = "Coin Rotate Atlas"
+
+        static let moveableEnemyAtlas = "Enemy Sprites"
         
         static let coinName = "Coin"
         static let coinImageName = "gold0"
@@ -74,6 +77,8 @@ class GameConstants {
         static let runPrefix = "Run_"
         static let diePrefix = "Die_"
         static let coinPrefix = "gold"
+
+        static let moveableEnemyPrefix = "MovingCactus"
         
         static let jumpUpActionKey = "JumpUp"
         static let brakeDescendActionKey = "BrakeDescend"

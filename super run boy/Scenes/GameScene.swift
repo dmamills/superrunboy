@@ -151,7 +151,7 @@ class GameScene : SKScene {
                 ObjectHelper.handleChild(sprite: sprite, with: sprite.name!, tileMap: tileMap!)
             }
         }
-
+        
         print("Level total coin count: \(levelCoinTotal)")
     }
     
@@ -209,7 +209,7 @@ class GameScene : SKScene {
             popup!.add(buttons: [Buttons.menu, Buttons.cancel, Buttons.retry])
             break
         default:
-            popup = ScorePopupNode(buttonHandlerDelegate: self, title: title, level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: coins, coins: superCoins, animated: true)
+            popup = ScorePopupNode(buttonHandlerDelegate: self, title: title, level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: coins, coins: superCoins, animated: true, totalCoins: levelCoinTotal)
             popup!.add(buttons: [Buttons.menu, Buttons.retry])
             break
         }
@@ -254,15 +254,15 @@ class GameScene : SKScene {
                 }
             }
         }
+
+        guard let coinDust = ParticleHelper.addParticleEffect(name: GameConstants.Strings.coinDustEmitter, particlePositionRange: CGVector(dx: 5.0, dy: 5.0), position: CGPoint.zero) else { return }
         
-        if let coinDust = ParticleHelper.addParticleEffect(name: GameConstants.Strings.coinDustEmitter, particlePositionRange: CGVector(dx: 5.0, dy: 5.0), position: CGPoint.zero) {
-            coinDust.zPosition = GameConstants.ZPositions.object
-            sprite.addChild(coinDust)
-            sprite.run(SKAction.fadeOut(withDuration: 0.4), completion: {
-                coinDust.removeFromParent()
-                sprite.removeFromParent()
-            })
-        }
+        coinDust.zPosition = GameConstants.ZPositions.object
+        sprite.addChild(coinDust)
+        sprite.run(SKAction.fadeOut(withDuration: 0.4), completion: {
+            coinDust.removeFromParent()
+            sprite.removeFromParent()
+        })
     }
 
     func die(_ reason : Int) {
@@ -318,6 +318,7 @@ class GameScene : SKScene {
             GameConstants.Strings.scoreScoreKey: coins,
             GameConstants.Strings.scoreStarsKey: stars,
             GameConstants.Strings.scoreCoinsKey: superCoins,
+            GameConstants.Strings.scoreTotalKey: levelCoinTotal
         ]
         
         ScoreManager.compare(scores: [scores], in: levelKey)

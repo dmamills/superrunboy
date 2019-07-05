@@ -17,10 +17,6 @@ class MenuScene : SKScene {
     let playButtonImage = GameConstants.Strings.playButton
     let settingsButtonImage = GameConstants.Strings.settingsButton
 
-    //var playerRunning : SKSpriteNode!
-    //var player = Player()
-    //let playerY : CGFloat = 90.0
-
     init(size: CGSize, backgroundMusicDelegate : BackgroundMusicDelegate) {
         self.backgroundMusicDelegate = backgroundMusicDelegate
         super.init(size: size)
@@ -32,43 +28,8 @@ class MenuScene : SKScene {
 
     override func didMove(to view: SKView) {
         layoutView()
-       // createDemo()
     }
-    
-    /*func createDemo() {
-        player.loadTextures()
-        playerRunning = SKSpriteNode(imageNamed: GameConstants.Strings.playerImage)
-        playerRunning.position = CGPoint(x: -20.0, y: playerY)
-        playerRunning.zPosition = GameConstants.ZPositions.player
-        playerRunning.scale(to: frame.size, width: false, multiplier: 0.1)
-        
-        addChild(playerRunning)
-        
-        let runLoop = SKAction.repeatForever(SKAction.animate(with: player.runFrames, timePerFrame: 0.05))
-        let idleLoop = SKAction.repeatForever(SKAction.animate(with: player.idleFrames, timePerFrame: 0.05))
-        playerRunning.run(runLoop, withKey: "running")
-        
-        let firstHalf = SKAction.move(to: CGPoint(x: frame.size.width / 2 + 20.0 - playerRunning.size.width / 2, y: playerY), duration: 2.5)
-        
-        let stopRunning = SKAction.run {
-            self.playerRunning.removeAction(forKey: "running")
-            self.playerRunning.run(idleLoop, withKey: "idle")
-        }
-        
-        let startRunning = SKAction.run {
-            self.playerRunning.removeAction(forKey: "idle")
-            self.playerRunning.run(runLoop, withKey: "running")
-        }
-        
-        let resetPlayerPosition = SKAction.run {
-            self.playerRunning.position = CGPoint(x: -20.0, y: self.playerY)
-        }
-        
-        let wait = SKAction.wait(forDuration: 1.5)
-        let secondHalf = SKAction.move(to: CGPoint(x: frame.size.width + playerRunning.size.width + 20.0, y: playerY), duration: 2.5)
-        playerRunning.run(SKAction.repeatForever(SKAction.sequence([firstHalf, stopRunning, wait, startRunning, secondHalf, wait, resetPlayerPosition])))
-    }*/
-    
+
     func layoutView() {
         let background = SKSpriteNode(imageNamed: GameConstants.Strings.menuBackground)
         background.scale(to: frame.size, width: false, multiplier: 1.0)

@@ -41,6 +41,7 @@ class PhysicsHelper {
 
     static func addMovableEnemy(tilemap : SKTileMapNode, sprite : SKSpriteNode, range : Int) {
         sprite.physicsBody = SKPhysicsBody(rectangleOf: sprite.size)
+        
         sprite.physicsBody!.categoryBitMask = GameConstants.PhysicsCategories.enemy
         sprite.physicsBody!.contactTestBitMask = GameConstants.PhysicsCategories.player
         sprite.physicsBody!.isDynamic = false
@@ -76,7 +77,10 @@ class PhysicsHelper {
             endX = tilemap.centerOfTile(atColumn: startingColumn + range, row: startingRow)
         }
 
-        //create action
+        let enemySprites = AnimationHelper.loadTextures(from: SKTextureAtlas(named: GameConstants.Strings.moveableEnemyAtlas), with: GameConstants.Strings.moveableEnemyPrefix)
+        sprite.run(SKAction.repeatForever(SKAction.animate(with: enemySprites, timePerFrame: 0.2, resize: false, restore: false)))
+        
+        // TODO: duration based on range
         let moveLeft = SKAction.move(to: startX!, duration: 1.0)
         let moveRight = SKAction.move(to: endX!, duration: 1.0)
         sprite.run(SKAction.repeatForever(SKAction.sequence([moveLeft, moveRight])))
@@ -86,10 +90,10 @@ class PhysicsHelper {
         let nextTile = tilemap.tileDefinition(atColumn: atColumn, row: row)
         if nextTile == nil {
             return false
-        } else {
-            guard let isGround = nextTile?.userData?.value(forKey: "ground") as? Bool else { return false }
-            return isGround
         }
+
+        guard let isGround = nextTile?.userData?.value(forKey: "ground") as? Bool else { return false }
+        return isGround
     }
 
     static func addBody(to tileMap : SKTileMapNode, with name : String) {

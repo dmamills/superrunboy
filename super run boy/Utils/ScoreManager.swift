@@ -13,6 +13,7 @@ typealias ScoreDictionary = [String : Int]
 let coinsKey = GameConstants.Strings.scoreCoinsKey
 let scoreKey = GameConstants.Strings.scoreScoreKey
 let starsKey = GameConstants.Strings.scoreStarsKey
+let totalKey = GameConstants.Strings.scoreTotalKey
 
 struct ScoreManager {
     static func getCurrentScore(for levelKey : String) -> ScoreDictionary {
@@ -24,6 +25,7 @@ struct ScoreManager {
             coinsKey: 0,
             scoreKey: 0,
             starsKey: 0,
+            totalKey: 100,
         ]
     }
     
@@ -38,6 +40,7 @@ struct ScoreManager {
         var maxCoins = currentScore[coinsKey]
         var maxScore = currentScore[scoreKey]
         var maxStars = currentScore[starsKey]
+        var totalCoin = currentScore[totalKey]
         
         for score in scores {
             if score[coinsKey]! > maxCoins! {
@@ -54,13 +57,18 @@ struct ScoreManager {
                 maxScore = score[scoreKey]
                 newHighscore = true
             }
+
+            if(score[totalKey] != totalCoin!) {
+                totalCoin = score[totalKey]
+            }
         }
         
         if newHighscore {
             updateScore(for: levelKey, and: [
                 scoreKey: maxScore!,
                 coinsKey: maxCoins!,
-                starsKey: maxStars!
+                starsKey: maxStars!,
+                totalKey: totalCoin!
             ])
         }
     }

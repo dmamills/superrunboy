@@ -142,6 +142,7 @@
 		85CFF59922AC8B39004B3589 /* RetryButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RetryButton.png; sourceTree = "<group>"; };
 		85CFF59A22AC8B39004B3589 /* EmptyButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyButton.png; sourceTree = "<group>"; };
 		85CFF59B22AC8B39004B3589 /* PlayButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PlayButton.png; sourceTree = "<group>"; };
+		85DA3FBA22C8169700027A81 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		85F7579722BA8DC3000D663A /* completed.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = completed.wav; sourceTree = "<group>"; };
 		85F7579822BA8DC3000D663A /* gameover.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gameover.wav; sourceTree = "<group>"; };
 		85F7579922BA8DC3000D663A /* powerup.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = powerup.wav; sourceTree = "<group>"; };
@@ -179,6 +180,7 @@
 		852B45C322AB012200C6C8FB = {
 			isa = PBXGroup;
 			children = (
+				85DA3FBA22C8169700027A81 /* README.md */,
 				85C9416322AF055300350F57 /* Images */,
 				852B45CE22AB012200C6C8FB /* super run boy */,
 				852B45CD22AB012200C6C8FB /* Products */,
@@ -686,6 +688,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Z7S85LAS2H;
 				INFOPLIST_FILE = "super run boy/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -693,7 +696,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mills.super-run-boy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -704,6 +707,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Z7S85LAS2H;
 				INFOPLIST_FILE = "super run boy/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -711,7 +715,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mills.super-run-boy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

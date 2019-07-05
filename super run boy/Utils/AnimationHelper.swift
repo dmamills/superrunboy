@@ -12,7 +12,6 @@ class AnimationHelper {
     
     static func loadTextures(from atlas: SKTextureAtlas, with name: String) -> [SKTexture] {
         var textures = [SKTexture]()
-        
         for index in 0..<atlas.textureNames.count {
             // Idle_0...Run_9
             let textureName = String(name + String(index))

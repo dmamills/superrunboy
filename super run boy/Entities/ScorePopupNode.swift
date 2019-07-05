@@ -14,8 +14,9 @@ class ScorePopupNode : PopupNode {
     var level : String
     var score : ScoreDictionary
     var scoreLabel : SKLabelNode!
+    var soundPlayer = SoundPlayer()
     
-    init(buttonHandlerDelegate: PopupButtonHandlerDelegate, title : String, level : String, texture : SKTexture, score: Int, coins: Int, animated: Bool) {
+    init(buttonHandlerDelegate: PopupButtonHandlerDelegate, title : String, level : String, texture : SKTexture, score: Int, coins: Int, animated: Bool, totalCoins : Int) {
         self.level = level
         self.score = ScoreManager.getCurrentScore(for: level)
         
@@ -26,7 +27,7 @@ class ScorePopupNode : PopupNode {
         addCoins(count: coins)
         
         if animated {
-            animateResult(with: CGFloat(score), and: 100.0)
+            animateResult(with: CGFloat(score), and: CGFloat(totalCoins))
         } else {
             scoreLabel.text = "\(score)"
             for i in 0..<self.score[GameConstants.Strings.scoreStarsKey]! {
@@ -97,16 +98,23 @@ class ScorePopupNode : PopupNode {
     func animateResult(with achievedScore: CGFloat, and maxScore: CGFloat) {
         var counter = 0
         let wait = SKAction.wait(forDuration: 0.05)
+        var unlockedFirst = false
+        var unlockedSecond = false
+        var unlockedThird = false
+
         let count = SKAction.run {
             counter += 1
             self.scoreLabel.text = String(counter)
-            
-            if CGFloat(counter) / maxScore == 0.8 {
+
+            if CGFloat(counter) / maxScore >= 0.8 && !unlockedThird {
                 self.animateStar(number: 2)
-            } else if CGFloat(counter) / maxScore == 0.4 {
+                unlockedThird = true
+            } else if CGFloat(counter) / maxScore >= 0.4 && !unlockedSecond {
                 self.animateStar(number: 1)
-            } else if counter == 1 {
+                unlockedSecond = true
+            } else if CGFloat(counter) / maxScore >= 0.2 && !unlockedFirst {
                 self.animateStar(number: 0)
+                unlockedFirst = true
             }
         }
         
