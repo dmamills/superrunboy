@@ -90,7 +90,7 @@ class GameScene : SKScene {
         worldLayer = Layer()
         addChild(worldLayer)
         worldLayer.zPosition = GameConstants.ZPositions.world
-        worldLayer.layerVelocity = CGPoint(x: -200.0, y: 0.0)
+        worldLayer.layerVelocity = CGPoint(x: -250.0, y: 0.0)
         
         backgroundLayer = RepeatingLayer()
         addChild(backgroundLayer)
@@ -423,8 +423,8 @@ extension GameScene : SKPhysicsContactDelegate {
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         switch contactMask {
         //if the player has lost contact with the ground, they are now in the air/cannot jump
-        case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.ground:
-            player.isJumping = true
+        //case GameConstants.PhysicsCategories.player | GameConstants.PhysicsCategories.ground:
+            //player.isJumping = true
         default:
             break;
         }
