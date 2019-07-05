@@ -52,18 +52,22 @@ class PhysicsHelper {
 
         var startX : CGPoint?
         var endX : CGPoint?
+        var startInterval = 0.0
+        var endInterval = 0.0
 
         //check to make sure range stays on ground tiles
         for i in 0...range {
             if startX == nil {
                 if !tileExistsAndIsGround(tilemap: tilemap, atColumn: startingColumn - i, row: startingRow - 1) {
                     startX = tilemap.centerOfTile(atColumn: startingColumn - (i-1), row: startingRow)
+                    startInterval = Double(i)
                 }
             }
 
             if endX == nil {
                 if !tileExistsAndIsGround(tilemap: tilemap, atColumn: startingColumn + i, row: startingRow - 1) {
                     endX = tilemap.centerOfTile(atColumn: startingColumn + (i-1), row: startingRow)
+                    endInterval = Double(i)
                 }
             }
         }
@@ -71,18 +75,20 @@ class PhysicsHelper {
         // if start/end not set, full range is safe
         if startX == nil {
             startX = tilemap.centerOfTile(atColumn: startingColumn - range, row: startingRow)
+            startInterval = Double(range)
         }
 
         if endX == nil {
             endX = tilemap.centerOfTile(atColumn: startingColumn + range, row: startingRow)
+            endInterval = Double(range)
         }
 
         let enemySprites = AnimationHelper.loadTextures(from: SKTextureAtlas(named: GameConstants.Strings.moveableEnemyAtlas), with: GameConstants.Strings.moveableEnemyPrefix)
         sprite.run(SKAction.repeatForever(SKAction.animate(with: enemySprites, timePerFrame: 0.2, resize: false, restore: false)))
         
         // TODO: duration based on range
-        let moveLeft = SKAction.move(to: startX!, duration: 1.0)
-        let moveRight = SKAction.move(to: endX!, duration: 1.0)
+        let moveLeft = SKAction.move(to: startX!, duration: startInterval)
+        let moveRight = SKAction.move(to: endX!, duration: endInterval)
         sprite.run(SKAction.repeatForever(SKAction.sequence([moveLeft, moveRight])))
     }
 
