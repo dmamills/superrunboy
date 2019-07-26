@@ -112,7 +112,7 @@ class LevelScene : SKScene {
 
         let levelScore = ScoreManager.getCurrentScore(for: levelKey)
 
-        let popup = ScorePopupNode(buttonHandlerDelegate: self, title: "World \(world!+1) Level \(level)", level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: levelScore[GameConstants.Strings.scoreScoreKey]!, coins: 4, animated: false, totalCoins: levelScore[GameConstants.Strings.scoreTotalKey]!)
+        let popup = ScorePopupNode(buttonHandlerDelegate: self, title: "World \(world!+1) Level \(level)", level: levelKey, texture: SKTexture(imageNamed: GameConstants.Strings.largePopup), score: levelScore[GameConstants.Strings.scoreScoreKey]!, coins: 4, animated: false, totalCoins: levelScore[GameConstants.Strings.scoreTotalKey] ?? 100)
         
         popup.add(buttons: [Buttons.cancel, Buttons.play])
         

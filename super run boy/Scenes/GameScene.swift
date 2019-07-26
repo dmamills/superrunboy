@@ -415,7 +415,6 @@ extension GameScene : SKPhysicsContactDelegate {
             handleCollectable(sprite: collectible as! SKSpriteNode)
         default:
             break;
-            
         }
     }
     

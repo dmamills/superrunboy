@@ -17,7 +17,13 @@ let totalKey = GameConstants.Strings.scoreTotalKey
 
 struct ScoreManager {
     static func getCurrentScore(for levelKey : String) -> ScoreDictionary {
-        if let existingData = UserDefaults.standard.dictionary(forKey: levelKey) as? ScoreDictionary {
+        if var existingData = UserDefaults.standard.dictionary(forKey: levelKey) as? ScoreDictionary {
+
+            if existingData[totalKey] == nil {
+                print("back filling old level save data?")
+                existingData[totalKey] = 100
+            }
+
             return existingData
         }
         
